@@ -1,10 +1,10 @@
-# MCP Bash Server
+# MCP Bash
 
-A simple MCP (Model-Context-Protocol) server for executing bash commands through a clean API. This project allows you to safely execute bash commands via an MCP server interface.
+A simple Model-Context-Protocol (MCP) server for executing bash commands. This project allows you to execute bash commands via an MCP server interface, with all the potential security risks that entails! I couldn't find anything else like this in the public domain at the time of writing, so I wrote my own. It's a boon when getting Claude Desktop to write code (it can run the tests, assess the results and fix the issues is finds in one pass.)
 
 ## Description
 
-MCP Bash Server provides a simple way to execute bash commands from client applications. It wraps command execution in a controlled environment and returns both stdout and stderr from the executed commands.
+MCP Bash provides a simple way to execute bash commands from client applications. It wraps command execution in a controlled environment and returns both stdout and stderr from the executed commands.
 
 Key features:
 - Execute arbitrary bash commands
@@ -21,21 +21,21 @@ Key features:
 ### Setup
 
 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/mcp-bash.git
-cd mcp-bash
-```
+   ```bash
+   git clone https://github.com/yourusername/mcp-bash.git
+   cd mcp-bash
+   ```
 
 2. Create and activate a virtual environment
-```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
 
 3. Install dependencies
-```bash
-pip install -e .
-```
+   ```bash
+   pip install -e .
+   ```
 
 ## Usage
 
@@ -45,26 +45,29 @@ pip install -e .
 python -m mcp.cli.server --module server
 ```
 
-### Claude Desktop Config
+### Claude Desktop Configuration
 
+To use this with Claude Desktop, add this to your configuration (usually /Users/<username>/Library/Application Support/Claude/claude_desktop_config.json, or see 'Settings -> Developer' in Claude Desktop UI):
+
+```json
 {
-"mcpServers": {
-....
+  "mcpServers": {
     "Bash": {
-          "command": "/Users/patrick/.local/bin/uv",
-          "args": [
-            "run",
-            "--with",
-            "mcp[cli]",
-            "mcp",
-            "run",
-            "/path/to/server.py"
-          ]
-        }
+      "command": "/Users/<username>/.local/bin/uv",
+      "args": [
+        "run",
+        "--with",
+        "mcp[cli]",
+        "mcp",
+        "run",
+        "/path/to/server.py"
+      ]
     }
+  }
 }
+```
 
-The ask Claude: 'List the files in my current directory using the Bash MCP tool'
+Then ask Claude: "List the files in my current directory using the Bash MCP tool"
 
 ### Using the API
 
@@ -99,11 +102,9 @@ if __name__ == "__main__":
 
 ## Security Considerations
 
-This server executes bash commands directly, which can be a lethal security risk if not properly restricted. There's
-nothing stopping the LLM running rm -rf / for example. But for my purposes, at the moment, its usefulness outweighs the risks.
+This server executes bash commands directly, which can be a lethal security risk if not properly restricted. There's nothing stopping the LLM from running dangerous commands like `rm -rf /`. For personal use, the usefulness may outweigh the risks, but take care when deploying.
 
 Consider:
-
 - Running in a container or restricted environment
 - Adding command validation or allowlists
 - Limiting filesystem access with appropriate user permissions
